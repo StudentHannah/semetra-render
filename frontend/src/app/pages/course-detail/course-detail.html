@@ -1,0 +1,94 @@
+<div class="detail-shell">
+  <button class="back-button" type="button" (click)="goBack()">← Zurück</button>
+
+  <div class="detail-header" *ngIf="!loading && !error">
+    <p class="course-short">{{ courseShort }}</p>
+    <h1>{{ courseName }}</h1>
+
+    <div class="summary-row">
+      <div class="summary-box">
+        <span>Gesamt</span>
+        <strong>{{ totalEh }} EH</strong>
+      </div>
+      <div class="summary-box">
+        <span>Anwesend</span>
+        <strong>{{ completedEh }} EH</strong>
+      </div>
+      <div class="summary-box">
+        <span>Offen</span>
+        <strong>{{ remainingEh }} EH</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-card" *ngIf="loading">Lade Termine...</div>
+  <div class="state-card error-card" *ngIf="error">{{ error }}</div>
+
+  <div class="timeline" *ngIf="!loading && !error">
+    <div class="timeline-item" *ngFor="let event of events">
+      <div
+        class="timeline-marker"
+        [class.completed]="event.isCompleted && event.attendanceStatus !== 'missed'"
+        [class.missed]="event.attendanceStatus === 'missed'"
+        [class.upcoming]="!event.isCompleted">
+      </div>
+
+      <div class="timeline-card">
+        <div class="timeline-top">
+          <div class="timeline-date-block">
+            <p class="event-date">{{ event.start | date:'dd.MM.yyyy' }}</p>
+            <p class="event-time">
+              {{ event.start | date:'HH:mm' }} – {{ event.end | date:'HH:mm' }}
+            </p>
+          </div>
+
+          <div class="event-badges">
+            <span class="type-pill">{{ event.lvType }}</span>
+            <span class="eh-pill">{{ event.eh }} EH</span>
+
+            <div class="badge-trophy-animation" *ngIf="trophyEventId === event.id">
+              <div
+                class="badge-trophy-lottie"
+                [id]="'trophy-container-' + event.id">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-body">
+          <div class="event-content">
+            <p class="event-code">{{ event.code }}</p>
+            <p class="event-location">{{ event.location }}</p>
+          </div>
+
+          <div class="event-status-block">
+  <span
+    *ngIf="!event.isCompleted"
+    class="status-text open">
+    Bevorstehend
+  </span>
+
+            <div class="attendance-toggle" *ngIf="event.isCompleted">
+              <button
+                type="button"
+                class="attendance-toggle-button"
+                [class.missed]="event.attendanceStatus === 'missed'"
+                (click)="toggleMissed(event)">
+                <span *ngIf="event.attendanceStatus !== 'missed'">✓ Anwesend</span>
+                <span *ngIf="event.attendanceStatus === 'missed'">✕ Gefehlt</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--  <div class="trophy-overlay" *ngIf="showTrophyAnimation">-->
+<!--    <iframe-->
+<!--      class="trophy-frame"-->
+<!--      src="assets/semi_happy.html"-->
+<!--      title="Pokal Animation">-->
+<!--    </iframe>-->
+<!--  </div>-->
+</div>

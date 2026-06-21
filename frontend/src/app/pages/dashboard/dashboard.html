@@ -1,0 +1,163 @@
+<div class="loading-screen" *ngIf="loading && !error">
+  <l-jelly
+    size="100"
+    stroke="5"
+    bg-opacity="0"
+    speed="0.9"
+    color="white"
+  ></l-jelly>
+
+  <p class="loading-text">Semetra wird geladen...</p>
+</div>
+
+
+
+<div class="dashboard-shell" *ngIf="!loading && !error">
+  <header class="dashboard-header">
+    <div class="header-inner">
+      <p class="eyebrow">Semester Overview - Semetra</p>
+      <div class="title-row">
+        <h1>Hallo Hannah</h1>
+        <div class="semi-wrapper">
+          <ng-lottie
+            class="semi-mascot"
+            [options]="options"
+            (animationCreated)="onMascotCreated($event)">
+          </ng-lottie>
+
+          <span class="semi-message" [ngSwitch]="semiMood">
+      <ng-container *ngSwitchCase="'happy'">Du bist gut im Plan.</ng-container>
+      <ng-container *ngSwitchCase="'neutral'">Solider Fortschritt.</ng-container>
+      <ng-container *ngSwitchCase="'worried'">Ein paar Fächer brauchen Aufmerksamkeit.</ng-container>
+    </span>
+        </div>
+
+        <div class="reset-actions">
+          <button class="reset-animations" (click)="openResetConfirm()" aria-label="Animationen zurücksetzen">Animationen zurücksetzen</button>
+        </div>
+
+        <!-- Trophy + completed count -->
+        <div class="trophy-wrapper" aria-hidden="false">
+          <img
+            class="trophy-icon"
+            ngSrc="pokal.svg"
+            width="36"
+            height="36"
+            alt="Pokal"
+          />
+          <div class="trophy-count" aria-label="Anzahl abgeschlossener Fächer">
+            <strong>{{ completedCoursesCount }}</strong>
+            <span class="slash">|</span>
+            <span>{{ totalCourses }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- Reset confirmation dialog -->
+      <div class="reset-confirm" *ngIf="resetConfirmOpen" role="dialog" aria-modal="true" aria-label="Animationen zurücksetzen">
+        <p>Alle Animation-Flags löschen, dadurch werden Einmal-Animationen wieder abgespielt. Fortfahren?</p>
+        <div class="reset-buttons">
+          <button (click)="confirmReset()" [disabled]="resetInProgress">Ja, zurücksetzen</button>
+          <button (click)="cancelReset()" [disabled]="resetInProgress">Abbrechen</button>
+        </div>
+      </div>
+      <p class="subtitle">
+<!--        Deine IL- und UE-Fortschritte pro Fach auf einen Blick.-->
+      </p>
+    </div>
+  </header>
+
+  <section class="summary-grid" *ngIf="!loading && !error">
+    <div class="summary-card">
+      <span class="summary-label">Fächer</span>
+      <strong>{{ animatedTotalCourses }}</strong>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Gesamt EH</span>
+      <strong>{{ animatedTotalEh }}</strong>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Absolvierte EH</span>
+      <strong>{{ animatedCompletedEh }}</strong>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Ø Fortschritt</span>
+      <strong>{{ animatedAverageProgress | number:'1.0-1' }}%</strong>
+    </div>
+  </section>
+  <br>
+  <br>
+
+  <section class="state-card" *ngIf="loading">
+    <p>Lade Daten...</p>
+  </section>
+
+  <section class="state-card error-card" *ngIf="error">
+    <p>{{ error }}</p>
+  </section>
+
+  <section class="card-grid" *ngIf="!loading && !error">
+    <article
+      #courseCard
+      class="course-card"
+      role="button"
+      tabindex="0"
+      [class.completed-card]="course.progressPercent >= 100"
+      [attr.data-course]="course.courseShort"
+      [style.animation-delay.ms]="i * 120"
+      *ngFor="let course of progressData; let i = index"
+      (click)="onCourseClick(course, $event)"
+      (keydown.enter)="onCourseKey($event, course)"
+      (keydown.space)="onCourseKey($event, course)">
+
+      <div class="card-top">
+        <div class="title-block">
+          <p class="course-short">{{ course.courseShort }}</p>
+          <h2>{{ course.courseName }}</h2>
+        </div>
+
+        <div class="percentage-pill" [class.completed-pill]="course.progressPercent >= 100">
+          {{ course.progressPercent | number:'1.0-1' }}%
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span>Fortschritt</span>
+          <span>{{ course.completedEh }} / {{ course.totalEh }} EH</span>
+        </div>
+
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            [style.width.%]="course.animatedProgressPercent">
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="label">Gesamt</span>
+          <strong>{{ course.totalEh }} EH</strong>
+        </div>
+
+        <div class="stat-box">
+          <span class="label">Vergangen</span>
+          <strong>{{ course.completedEh }} EH</strong>
+        </div>
+
+        <div class="stat-box">
+          <span class="label">Offen</span>
+          <strong>{{ course.remainingEh }} EH</strong>
+        </div>
+
+        <div class="stat-box">
+          <span class="label">IL / UE</span>
+          <strong>{{ course.totalIlEh }} / {{ course.totalUeEh }}</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>

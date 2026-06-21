@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.angular/
+.env
+backend/node_modules/
+backend/dist/
+backend/public/
+backend/data/attendance.json
+backend/src/*.js
+backend/src/*.js.map
+backend/src/*.d.ts
+backend/src/*.d.ts.map
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
