@@ -26,7 +26,9 @@ export class CourseDetailComponent implements OnInit {
   showTrophyAnimation = false;
 
   trophyEventId: string | number | null = null;
+  happyEventId: string | number | null = null;
   private trophyAnimation?: AnimationItem;
+  private happyAnimation?: AnimationItem;
 
   ngOnInit(): void {
     this.courseShort = this.route.snapshot.paramMap.get('courseShort') ?? '';
@@ -72,8 +74,10 @@ export class CourseDetailComponent implements OnInit {
     return this.totalEh - this.completedEh;
   }
 
-  toggleMissed(event: CourseEvent): void {
-    const newStatus = event.attendanceStatus === 'missed' ? 'attended' : 'missed';
+  setAttendance(event: CourseEvent, newStatus: 'attended' | 'missed'): void {
+    if (event.attendanceStatus === newStatus) {
+      return;
+    }
 
     this.progressService.updateAttendance(event.id, newStatus).subscribe({
       next: () => {
@@ -81,6 +85,8 @@ export class CourseDetailComponent implements OnInit {
 
         if (newStatus === 'missed') {
           this.playTrophyAnimation(event.id);
+        } else if (newStatus === 'attended') {
+          this.playHappyAnimation(event.id);
         }
 
         this.cdr.detectChanges();
@@ -121,6 +127,41 @@ export class CourseDetailComponent implements OnInit {
         this.trophyAnimation?.destroy();
         this.trophyAnimation = undefined;
         this.trophyEventId = null;
+        this.cdr.detectChanges();
+      }, 1800);
+    }, 0);
+  }
+
+  private playHappyAnimation(eventId: string) {
+    this.happyAnimation?.destroy();
+    this.happyAnimation = undefined;
+
+    this.happyEventId = eventId;
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      const container = document.getElementById(`happy-container-${eventId}`);
+
+      if (!container) {
+        console.warn('Kein Happy-Container für Event gefunden:', eventId);
+        return;
+      }
+
+      this.happyAnimation = lottie.loadAnimation({
+        container,
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        path: '/semi_happy.json',
+        rendererSettings: {
+          preserveAspectRatio: 'xMidYMid meet',
+        },
+      });
+
+      setTimeout(() => {
+        this.happyAnimation?.destroy();
+        this.happyAnimation = undefined;
+        this.happyEventId = null;
         this.cdr.detectChanges();
       }, 1800);
     }, 0);

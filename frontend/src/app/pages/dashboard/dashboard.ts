@@ -131,6 +131,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   openResetConfirm(): void {
     this.resetConfirmOpen = true;
     this.cdr.detectChanges();
+    window.location.reload();
   }
 
   cancelReset(): void {
