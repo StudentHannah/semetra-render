@@ -1,3 +1,13 @@
+<div class="loading-screen" *ngIf="loading && !error">
+  <l-jelly
+    size="100"
+    stroke="5"
+    bg-opacity="0"
+    speed="0.9"
+    color="white"
+  ></l-jelly>
+</div>
+
 <div class="detail-shell">
   <button class="back-button" type="button" (click)="goBack()">← Zurück</button>
 
@@ -21,7 +31,6 @@
     </div>
   </div>
 
-  <div class="state-card" *ngIf="loading">Lade Termine...</div>
   <div class="state-card error-card" *ngIf="error">{{ error }}</div>
 
   <div class="timeline" *ngIf="!loading && !error">

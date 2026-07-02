@@ -2,13 +2,15 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseEvent } from '../../models/course-event.model';
 import { ProgressService } from '../../services/progress';
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import lottie, { AnimationItem } from 'lottie-web';
+import { jelly } from 'ldrs';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
   imports: [CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './course-detail.html',
   styleUrl: './course-detail.scss',
 })
@@ -31,6 +33,7 @@ export class CourseDetailComponent implements OnInit {
   private happyAnimation?: AnimationItem;
 
   ngOnInit(): void {
+    jelly.register();
     this.courseShort = this.route.snapshot.paramMap.get('courseShort') ?? '';
 
     if (!this.courseShort) {
