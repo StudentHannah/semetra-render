@@ -11,6 +11,21 @@
 <div class="detail-shell">
   <button class="back-button" type="button" (click)="goBack()">← Zurück</button>
 
+  <div class="trophy-wrapper" aria-hidden="false">
+    <img
+      class="trophy-icon"
+      ngSrc="pokal.svg"
+      width="36"
+      height="36"
+      alt="Pokal"
+    />
+    <div class="trophy-count" aria-label="Anzahl abgeschlossener Fächer">
+      <strong>{{ completedCoursesCount }}</strong>
+      <span class="slash">|</span>
+      <span>{{ totalCourses }}</span>
+    </div>
+  </div>
+
   <div class="detail-header" *ngIf="!loading && !error">
     <p class="course-short">{{ courseShort }}</p>
     <h1>{{ courseName }}</h1>

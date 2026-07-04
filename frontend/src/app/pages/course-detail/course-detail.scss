@@ -33,6 +33,42 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
+.trophy-wrapper {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1200;
+  pointer-events: auto;
+}
+
+.trophy-icon {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+
+.trophy-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff6e3;
+  font-weight: 800;
+}
+
+.trophy-count .slash {
+  opacity: 0.7;
+  margin: 0 4px;
+}
+
 .detail-header {
   margin-bottom: 28px;
 }
@@ -279,6 +315,21 @@ h1 {
 @media (max-width: 760px) {
   .detail-shell {
     padding: 24px 16px 40px;
+  }
+
+  .trophy-wrapper {
+    top: 12px;
+    right: 12px;
+    padding: 6px 8px;
+  }
+
+  .trophy-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .trophy-count {
+    font-size: 0.9rem;
   }
 
   .timeline-body,

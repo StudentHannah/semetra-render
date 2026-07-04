@@ -1,6 +1,8 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { CourseEvent } from '../../models/course-event.model';
+import { CourseProgress } from '../../models/course-progress.model';
 import { ProgressService } from '../../services/progress';
 import { Component, OnInit, inject, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import lottie, { AnimationItem } from 'lottie-web';
@@ -8,8 +10,7 @@ import { jelly } from 'ldrs';
 
 @Component({
   selector: 'app-course-detail',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './course-detail.html',
   styleUrl: './course-detail.scss',
@@ -23,6 +24,7 @@ export class CourseDetailComponent implements OnInit {
   courseShort = '';
   courseName = '';
   events: CourseEvent[] = [];
+  progressData: CourseProgress[] = [];
   loading = true;
   error = '';
   showTrophyAnimation = false;
@@ -43,10 +45,14 @@ export class CourseDetailComponent implements OnInit {
       return;
     }
 
-    this.progressService.getCourseEvents(this.courseShort).subscribe({
-      next: (data) => {
-        this.events = data;
-        this.courseName = data[0]?.courseName ?? this.courseShort;
+    forkJoin({
+      events: this.progressService.getCourseEvents(this.courseShort),
+      progress: this.progressService.getProgress(),
+    }).subscribe({
+      next: ({ events, progress }) => {
+        this.events = events;
+        this.progressData = progress;
+        this.courseName = events[0]?.courseName ?? this.courseShort;
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -77,6 +83,14 @@ export class CourseDetailComponent implements OnInit {
     return this.totalEh - this.completedEh;
   }
 
+  get totalCourses(): number {
+    return this.progressData.length;
+  }
+
+  get completedCoursesCount(): number {
+    return this.progressData.filter((course) => course.progressPercent >= 100).length;
+  }
+
   setAttendance(event: CourseEvent, newStatus: 'attended' | 'missed'): void {
     if (event.attendanceStatus === newStatus) {
       return;
@@ -92,6 +106,19 @@ export class CourseDetailComponent implements OnInit {
           this.playHappyAnimation(event.id);
         }
 
+        this.loadProgressCounts();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+
+  private loadProgressCounts(): void {
+    this.progressService.getProgress().subscribe({
+      next: (progress) => {
+        this.progressData = progress;
         this.cdr.detectChanges();
       },
       error: (err) => {
